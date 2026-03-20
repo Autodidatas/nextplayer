@@ -25,10 +25,18 @@ jobs:
       run: chmod +x gradlew
 
     - name: 🛠️ Compilar o APK (Debug)
-      run: ./gradlew assembleDebug
+      # O --stacktrace ajuda a ver o erro real se a compilação travar
+      run: ./gradlew assembleDebug --stacktrace
+
+    - name: 🔍 Localizar o APK (Rastreador)
+      # Esse comando vai imprimir no seu log o caminho exato do arquivo gerado
+      run: find . -name "*.apk"
 
     - name: 📦 Subir o APK para Download
       uses: actions/upload-artifact@v4
       with:
         name: Autodidata-Play-APK
-        path: app/build/outputs/apk/debug/app-debug.apk
+        # O segredo está nos dois asteriscos (**), eles buscam em subpastas
+        path: "**/build/outputs/apk/debug/*.apk"
+        # Se ele não achar nada, o build vai dar ERRO (assim a gente não fica no escuro)
+        if-no-files-found: error
